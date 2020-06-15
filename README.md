@@ -49,7 +49,7 @@ plot_list[[i]] <- plt
  
  With this loop and arrangeGrob function I was able to plot the following plots.
  
- <img width="350" alt="portfolio_view" src="/images/count.png">
+ <img width="750" alt="portfolio_view" src="/images/count.png">
  
  
 
