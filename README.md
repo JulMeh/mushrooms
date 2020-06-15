@@ -4,6 +4,11 @@ I have this data set from Kaggle. For this reason, and for a better understandin
 
 ! [\center Edible Fungi, Wikimedia Commons \center(https://upload.wikimedia.org/wikipedia/commons/0/0a/Britannica_Mushroom_Pasture_Mushroom.jpg) 
 
+![\center Edible Fungi, Wikimedia Commons \center](https://upload.wikimedia.org/wikipedia/commons/0/0a/Britannica_Mushroom_Pasture_Mushroom.jpg)
+
+
+![\center Edible Fungi, Wikimedia Commons \center](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Edible_Fungi.jpg/1185px-Edible_Fungi.jpg)
+
 <img width="350" alt="portfolio_view" src="/images/Britannica_Mushroom_Pasture_Mushroom.jpgg">
 
 ## Context
