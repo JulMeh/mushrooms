@@ -19,3 +19,42 @@ Which features are most indicative of a poisonous mushroom?
 
 ## Acknowledgements
 This dataset was originally donated to the UCI Machine Learning repository. You can learn more about past research using the data [here](https://archive.ics.uci.edu/ml/datasets/Mushroom).
+
+# The Project
+
+After loading and a few simple edits of the data came the following steps:
+* Exploratory Data Analysis
+* Modelling
+* Model comparison
+* Conclusions
+* References
+
+## Exploratory Data Analysis
+At the beginning of the
+
+ ```
+ plot_list <- list()
+
+for(i in colNames){
+plt <- ggplot(all, aes_string(x=i, fill = "class")) +
+  geom_bar(stat="count",position=position_dodge()) +
+   labs(
+      title= i) +
+   scale_x_discrete(name="")+
+  theme(legend.position="none")
+
+plot_list[[i]] <- plt
+}
+ ```
+ 
+ With this loop I was able to plot the following plots
+ 
+ 
+
+
+
+
+<img width="750" alt="portfolio_view" src="/images/mushrooms.png">
+
+
+
