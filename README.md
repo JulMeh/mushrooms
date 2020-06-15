@@ -47,7 +47,9 @@ plot_list[[i]] <- plt
 }
  ```
  
- With this loop I was able to plot the following plots
+ With this loop and arrangeGrob function I was able to plot the following plots.
+ 
+ 
  
  
 
