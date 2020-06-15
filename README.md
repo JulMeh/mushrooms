@@ -2,7 +2,7 @@
 
 I have this data set from Kaggle. For this reason, and for a better understanding of the data, I will also take over the rest of the description of Kaggle.
 
-! [\center Edible Fungi, Wikimedia Commons \center (https://upload.wikimedia.org/wikipedia/commons/0/0a/Britannica_Mushroom_Pasture_Mushroom.jpg) 
+! [\center Edible Fungi, Wikimedia Commons \center(https://upload.wikimedia.org/wikipedia/commons/0/0a/Britannica_Mushroom_Pasture_Mushroom.jpg) 
 
 <img width="350" alt="portfolio_view" src="/images/Britannica_Mushroom_Pasture_Mushroom.jpgg">
 
