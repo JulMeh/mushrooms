@@ -58,8 +58,12 @@ Dueto the fact that not all variabels are good distrubuted for a train and test 
 Since the focus of this project is not on the optimization of the classification, I will implement it quickly and easily (it also saves a lot of time).
 
 ### Comparing the models
+ It is possible to predict the poisonous and edible mushrooms with a high accuracy with each model. 
+
+We were able to predict with very high accuracy the poisonous and edible mushrooms based on the three models used, Random Forest, Gradient Boosting Machine (GBM) and XGBoost. For the GBM and XGBoost models we were also using cross validation. The best prediction was obtained using Random Forest model.
 
 <img width="750" alt="portfolio_view" src="/images/mushrooms.png">
 
+Actually I thought that the gb and XGBoost model perform better than the RF but under the simple settings of the algorytmen, the Random Forest gives the best results. But once you adjust the settings of the Gradient Boosting models they should be just as good as the Random Forest (but they take longer).
 
-
+For the boosters I also used crossvalidation, but with the struckture of the data this is relatively difficult. 
