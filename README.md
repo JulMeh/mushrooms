@@ -51,10 +51,13 @@ plot_list[[i]] <- plt
  
  <img width="750" alt="portfolio_view" src="/images/count.png">
  
- 
+Dueto the fact that not all variabels are good distrubuted for a train and test split I had to remove "gillattachment" and "veiltype". After I saw that none of the variables is able to split mushrooms clearly into edible and poisonous I started to model. 
 
+## Modelling
 
+Since the focus of this project is not on the optimization of the classification, I will implement it quickly and easily (it also saves a lot of time).
 
+### Comparing the models
 
 <img width="750" alt="portfolio_view" src="/images/mushrooms.png">
 
