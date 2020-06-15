@@ -2,6 +2,8 @@
 
 I have this data set from Kaggle. For this reason, and for a better understanding of the data, I will also take over the rest of the description of Kaggle.
 
+<img width="350" alt="portfolio_view" src="/images/Britannica_Mushroom_Pasture_Mushroom.jpgg">
+
 ## Context
 Although this dataset was originally contributed to the UCI Machine Learning repository nearly 30 years ago, mushroom hunting (otherwise known as "shrooming") is enjoying new peaks in popularity. Learn which features spell certain death and which are most palatable in this dataset of mushroom characteristics. And how certain can your model be?
 
