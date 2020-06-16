@@ -67,4 +67,12 @@ We were able to predict with very high accuracy the poisonous and edible mushroo
 Actually I thought that the gb and XGBoost model perform better than the RF but under the simple settings of the algorytmen, the Random Forest gives the best results. But once you adjust the settings of the Gradient Boosting models they should be just as good as the Random Forest (but they take longer).
 A very interesting fact is that the different algorithms consider other variables as important. In this case, it was only a comparison of the ranking and not a direct comparison that mattered, so that the saklieren of the x axis plays a subordinate role.
 
-For the boosters I also used crossvalidation, but with the struckture of the data this is relatively difficult. 
+For the boosters I also used crossvalidation, but with the struckture of the data this is relatively difficult.
+
+ # References/ Inspiration
+[1] [Complete Guide to Parameter Tuning in XGBoost](https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/)
+[3] [Kieran Healy, Data Visualization] (https://kieranhealy.org/publications/dataviz/)
+[2] [Cole Nussbaumer Knaflic, Storytelling With Data](http://www.storytellingwithdata.com/) 
+
+
+https://kieranhealy.org/publications/dataviz/
