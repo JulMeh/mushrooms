@@ -72,9 +72,6 @@ For the boosters I also used crossvalidation, but with the struckture of the dat
  # References/ Inspiration
 [1] [Complete Guide to Parameter Tuning in XGBoost](https://www.analyticsvidhya.com/blog/2016/03/complete-guide-parameter-tuning-xgboost-with-codes-python/)
 
-[3] [Kieran Healy, Data Visualization] (https://kieranhealy.org/publications/dataviz/)
+[3] [Kieran Healy, Data Visualization](https://kieranhealy.org/publications/dataviz/)
 
 [2] [Cole Nussbaumer Knaflic, Storytelling With Data](http://www.storytellingwithdata.com/) 
-
-
-https://kieranhealy.org/publications/dataviz/
