@@ -1,0 +1,391 @@
+---
+title: "mushrooms"
+author: "Julien"
+date: "`r  format(Sys.time(), '%Y-%m-%d')`"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r ,include=FALSE}
+library(readr)
+library(moments)
+library(vip)
+library(plyr)
+library(dplyr)
+library(corrplot)
+library(scales)
+library(Rmisc)
+library(ggrepel)
+library(psych)
+library(ggthemes)
+library(tidyr)
+library(caret)
+library(ggplot2)
+library(pROC)
+library(randomForest)
+library(gbm)
+library(xgboost)
+library(gridExtra)
+library(grid)
+
+theme_set(theme_minimal())
+```
+
+```{r pressure, echo=FALSE}
+all <- read_csv(".../Documents/Kaggle/mushrooms/datasets_478_974_mushrooms.csv")
+#cleaning colnames
+colnames(all) <- gsub("-","",colnames(all))
+dim(all)
+```
+
+```{r}
+# NA fixing: Reading description
+all$gillattachment[is.na(all$gillattachment)] <- "TRUE"
+```
+
+```{r , echo=FALSE}
+head(all)
+```
+
+# EDA {.tabset }
+
+## ggplot loop function
+
+```{r }
+colNames <- colnames(all)
+plot_list <- list()
+
+for(i in colNames){
+plt <- ggplot(all, aes_string(x=i, fill = "class")) +
+  geom_bar(stat="count",position=position_dodge()) +
+   labs(
+      title= i) +
+   scale_x_discrete(name="")+
+    theme(axis.title.y=element_blank(),
+        legend.position="none")
+
+plot_list[[i]] <- plt
+}
+```
+
+## Cap
+
+```{r, echo=FALSE}
+p1 <- plot_list$capshape
+p2 <- plot_list$capsurface
+p3 <- plot_list$capcolor
+
+grobs <- grobTree(
+  gp = gpar(fontsize = 14, fontface = "bold"),
+  textGrob(label = "Count musrooms by classes '",
+           name = "title1",
+           x = unit(0.2, "lines"),
+           hjust = 0, vjust = 0),
+  textGrob(label = "edible",
+           name = "title2",
+           x = grobWidth("title1") + unit(0.2, "lines"),
+           hjust = 0, vjust = 0,
+           gp = gpar(col = "#F8766D")),
+  textGrob(label = "' and '",
+           name = "title3",
+           x = grobWidth("title1") + grobWidth("title2") + unit(0.2, "lines"),
+           hjust = 0, vjust = 0),
+  textGrob(label = "poisonous", name = "title5",
+           x = grobWidth("title1") + grobWidth("title2") + grobWidth("title3") + unit(0.2, "lines"),
+           hjust = 0, vjust = 0, gp = gpar(col = "#00BFC4")),
+  textGrob(label = "'.", name = "title6",
+           x = grobWidth("title1") + grobWidth("title2") + grobWidth("title3") + grobWidth("title5") + unit(0.2, "lines"),
+           hjust = 0, vjust = 0)
+)
+
+
+gg <- arrangeGrob(grobs = list(p1, p2, p3),
+                  col= 3, top=grobs, padding = unit(2.6, "line"))
+grid.newpage()
+grid.draw(gg)
+```
+
+## Gill
+
+```{r, echo=FALSE}
+p1 <- plot_list$gillattachment
+p2 <- plot_list$gillspacing
+p3 <- plot_list$gillsize
+p4 <- plot_list$gillcolor
+
+grid.arrange(grobs = list(p1, p2, p3,p4),
+             col= 2, top=grobs, padding = unit(2.6, "line"))
+```
+
+## stalk
+
+```{r, echo=FALSE}
+p1 <- plot_list$stalksurfaceabovering
+p2 <- plot_list$stalksurfacebelowring
+p3 <- plot_list$stalkcolorabovering
+p4 <- plot_list$stalkcolorbelowring
+
+grid.arrange(grobs = list(p1, p2, p3,p4),
+             col= 2, top=grobs, padding = unit(2.6, "line"))
+```
+
+## veil
+
+```{r, echo=FALSE}
+p1 <- plot_list$veiltype
+p2 <- plot_list$veilcolor
+
+grid.arrange(grobs = list(p1, p2),
+             col= 2, top=grobs, padding = unit(2.6, "line"))
+```
+
+## ring
+
+```{r, echo=FALSE}
+p1 <- plot_list$ringnumber
+p2 <- plot_list$ringtype
+
+grid.arrange(grobs = list(p1, p2),
+             col= 2, top=grobs, padding = unit(2.6, "line"))
+```
+
+## Other variabels
+
+```{r, echo=FALSE}
+p1 <- plot_list$bruises
+p2 <- plot_list$odor
+p3 <- plot_list$sporeprintcolor
+p4 <- plot_list$population
+p5 <- plot_list$habitat
+
+grid.arrange(grobs = list(p1, p2, p3, p4, p5),
+             col= 2, top=grobs, padding = unit(2.6, "line"))
+```
+
+# Model {.tabset }
+
+```{r, echo=FALSE}
+raw.data <- all
+raw.data$gillattachment <- NULL
+raw.data$veiltype <- NULL
+
+df <- data.frame(sapply(raw.data, function (x) as.numeric(as.factor(x))))
+df$class <- df$class - 1
+nrows <- nrow(df)
+set.seed(314)
+indexT <- sample(1:nrow(df), 0.7 * nrows)
+trainset = df[indexT,]
+testset =   df[-indexT,]
+n <- names(trainset)
+```
+
+## Random Forest
+
+```{r, echo=FALSE}
+rf.form <- as.formula(paste("class ~", paste(n[!n %in% "class"], collapse = " + ")))
+rftrainset <- randomForest(rf.form,trainset,ntree=100,importance=T)
+```
+
+```{r, echo=FALSE}
+vipRf <-vip(rftrainset, num_features = 20, fill = "#a3a500")
+```
+
+```{r, echo=FALSE}
+testset$predicted <- round(predict(rftrainset ,testset),0)
+testset_rf <- testset$predicted;
+```
+
+```{r, echo=FALSE}
+plotConfusionMatrix <- function(testset, sSubtitle,lowCol, higCol) {
+    tst <- data.frame(testset$predicted, testset$class)
+    opts <- c("Predicted", "True")
+    names(tst) <- opts
+    lowCol <- lowCol
+    higCol <- higCol
+      
+    cf <- plyr::count(tst)
+    cf[opts][cf[opts]==0] <- "Poisonous"
+    cf[opts][cf[opts]==1] <- "Edible"
+
+    ggplot(data =  cf, mapping = aes(x = True, y = Predicted)) +
+      labs(title = "Confusion matrix", subtitle = sSubtitle) +
+      geom_tile(aes(fill = freq), colour = "grey") +
+      geom_text(aes(label = sprintf("%1.0f", freq)), vjust = 1) +
+      scale_fill_gradient(low = lowCol , high = higCol ) +
+      theme_bw() + theme(legend.position = "none")
+}
+
+plotConfusionMatrix2 <- function(testset,lowCol, higCol) {
+    tst <- data.frame(testset$predicted, testset$class)
+    opts <- c("Predicted", "True")
+    names(tst) <- opts
+    lowCol <- lowCol
+    higCol <- higCol
+      
+    cf <- plyr::count(tst)
+    cf[opts][cf[opts]==0] <- "Poisonous"
+    cf[opts][cf[opts]==1] <- "Edible"
+
+    ggplot(data =  cf, mapping = aes(x = True, y = Predicted)) +
+      geom_tile(aes(fill = freq), colour = "grey") +
+      geom_text(aes(label = sprintf("%1.0f", freq)), vjust = 1) +
+      scale_fill_gradient(low = lowCol , high = higCol ) +
+      theme_bw() + theme(legend.position = "none")
+}
+```
+
+```{r fig.width=4, fig.height=4, echo=FALSE}
+plotConfusionMatrix(testset,"Prediction using RandomForest with 100 trees","#a3a500","#5d5e02")
+matRf <- plotConfusionMatrix2(testset,"#a3a500","#5d5e02")
+```
+
+## Gradient Boosting Machine model
+
+```{r, echo=FALSE}
+n <- names(trainset)
+gbm.form <- as.formula(paste("class ~", paste(n[!n %in% "class"], collapse = " + ")))
+```
+
+```{r, echo=FALSE}
+gbmFormula = gbm(formula = gbm.form,
+               distribution = "bernoulli",
+               data = trainset,
+               n.trees = 500,
+               shrinkage = .1,
+               n.minobsinnode = 15,
+               cv.folds = 5,
+               n.cores = 1)
+```
+
+```{r include=FALSE}
+optimalTreeNumberPredictionCV <- gbm.perf(gbmFormula)
+```
+
+```{r, echo=FALSE}
+gbmTest = predict(object = gbmFormula,
+                           newdata = testset,
+                           n.trees = optimalTreeNumberPredictionCV,
+                           type = "response")
+testset$predicted <- round(gbmTest,0)
+testset_gbm <- testset$predicted
+```
+
+```{r, echo=FALSE}
+vip(gbmFormula, num_features = 20, fill = "#00bf7c") + ggtitle("Variable importance of xgb")
+vipGb <- vip(gbmFormula, num_features = 20, fill = "#00bf7c")
+```
+
+```{r fig.width=4, fig.height=4}
+plotConfusionMatrix(testset,"Prediction using RandomForest with 100 trees", "#01784e","#00bf7c")
+matGb <- plotConfusionMatrix2(testset, "#01784e","#00bf7c")
+```
+
+## XGBoost model
+
+```{r echo=FALSE}
+dmTrain <- xgb.DMatrix(as.matrix(trainset %>% select(-class)), label = trainset$class)
+dmTest <- xgb.DMatrix(as.matrix(testset %>% select(-class,-predicted)), label = testset$class)
+```
+
+```{r echo=FALSE}
+params <- list(
+  "objective" = "binary:logistic",
+  "eval_metric" = "auc",
+  "eta" = 0.012,
+  "subsample" = 0.8,
+  "max_depth" = 8,
+  "colsample_bytree" = 0.9,
+  "min_child_weight"= 5
+)
+```
+
+```{r echo=FALSE}
+model_xgb.cv <- xgb.cv(params=params,
+                      data = dmTrain, 
+                      maximize = TRUE,
+                      nfold = 5,
+                      nrounds = 5000,
+                      nthread = 3,
+                      early_stopping_round=100,
+                      print_every_n=100)
+```
+
+```{r echo=FALSE}
+model_xgb <- xgboost(params=params,
+                      data = dmTrain, 
+                      maximize = TRUE,
+                      nrounds = 5000,
+                      nthread = 3,
+                      early_stopping_round=100,
+                      print_every_n=100)
+```
+
+```{r echo=FALSE}
+testset$predicted <- round(predict(model_xgb ,dmTest),0)
+testset_xgboost <- testset$predicted
+```
+
+```{r echo=FALSE}
+vip(model_xgb, num_features = 20, fill = "#e76bf3") + ggtitle("Variable importance of xgb")
+vipXgb <- vip(model_xgb, num_features = 20, fill = "#e76bf3")
+```
+
+```{r fig.width=4, fig.height=4, echo=FALSE}
+plotConfusionMatrix(testset,"Prediction using RandomForest with 100 trees", "#83378a","#e76bf3")
+matXgb <- plotConfusionMatrix2(testset, "#83378a","#e76bf3")
+```
+
+```{r echo=FALSE}
+print(sprintf("Area under curve (AUC) : %.3f",auc(testset$class, testset$predicted)))
+```
+
+# Model comparison
+
+```{r echo=FALSE}
+grobs <- grobTree(
+  gp = gpar(fontsize = 12, fontface = "bold"),
+  textGrob(label = "Variable importance and confusion matrix of ",
+           name = "title1",
+           x = unit(0.2, "lines"),
+           hjust = 0, vjust = 0),
+  textGrob(label = "Random Forest",
+           name = "Rf",
+           x = grobWidth("title1") + unit(0.2, "lines"),
+           gp = gpar(col = "#a3a500"),
+           hjust = 0, vjust = 0),
+  textGrob(label = ", ",
+           name = ",",
+           x = grobWidth("title1") + grobWidth("Rf") + unit(0.2, "lines"),
+           hjust = 0, vjust = 0),
+  textGrob(label = "Gradient Boosting",
+           name = "GB",
+           x = grobWidth("title1") + grobWidth("Rf")+ grobWidth(",") + unit(0.2, "lines"),
+           gp = gpar(col = "#00bf7c"),
+           hjust = 0, vjust = 0),
+  textGrob(label = " and ",
+           name = "and",
+           x = grobWidth("title1") + grobWidth("Rf")+ grobWidth(",")+ grobWidth("GB") + unit(0.2, "lines"),
+           hjust = 0, vjust = 0),
+  textGrob(label = "Extrem Gradient Boosting",
+           name = "XGB",
+           x = grobWidth("title1") + grobWidth("Rf")+ grobWidth(",")+ grobWidth("GB")+ grobWidth("and") + unit(0.2, "lines"),
+           gp = gpar(col = "#e76bf3"),
+           hjust = 0, vjust = 0)
+  )
+```
+
+```{r fig.width=9, fig.height=6, echo=FALSE}
+grid.arrange(grobs = list(vipRf, vipGb, vipXgb, matRf,matGb, matXgb), 
+             ncol= 3, top=grobs, padding = unit(2.6, "line"))
+```
+
+# Conclusions
+
+We were able to predict with very high accuracy the poisonous and edible mushrooms based on the three models used, `Random Forest, Gradient Boosting Machine (GBM) and XGBoost. For the GBM and XGBoost models we were also using cross validation. The best prediction was obtained using Random Forest model.
