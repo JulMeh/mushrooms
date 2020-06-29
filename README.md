@@ -1,4 +1,4 @@
-# Mushrooms
+# Shrooming
 
 I have this data set from Kaggle. For this reason, and for a better understanding of the data, I will also take over the rest of the description of [Kaggle](https://www.kaggle.com/uciml/mushroom-classification).
 
